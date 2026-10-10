@@ -1,1 +1,769 @@
 index.html
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZAL | Spider-Man: No Way Home Multiverse Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        spideyRed: '#E62429',
+                        spideyBlue: '#002B49',
+                        spideyGold: '#F3D250',
+                        spideyDark: '#0a0a12',
+                        starkBlue: '#00f0ff',
+                        goldSuit: '#d4af37',
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'neon-red': '0 0 20px rgba(230, 36, 41, 0.6), 0 0 40px rgba(230, 36, 41, 0.3)',
+                        'neon-gold': '0 0 20px rgba(243, 210, 80, 0.6), 0 0 40px rgba(243, 210, 80, 0.3)',
+                        'neon-blue': '0 0 20px rgba(0, 240, 255, 0.6), 0 0 40px rgba(0, 240, 255, 0.3)',
+                        'portal': '0 0 50px #f3d250, inset 0 0 50px #e62429',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #0a0a12;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Web pattern background */
+        .web-bg {
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(230, 36, 41, 0.15) 0%, transparent 60%),
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        /* Multiverse Portal Ring */
+        .portal-ring {
+            border-radius: 50%;
+            border: 4px dashed #f3d250;
+            box-shadow: 0 0 35px #f3d250, inset 0 0 35px #e62429;
+            animation: rotatePortal 12s linear infinite;
+        }
+
+        @keyframes rotatePortal {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.03); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* Web Shooter FX Canvas */
+        #webCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        /* Custom Clip Path Hexagon/Trapezoid */
+        .stark-card {
+            clip-path: polygon(0 0, 92% 0, 100% 8%, 100% 100%, 8% 100%, 0 92%);
+            background: rgba(15, 18, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(230, 36, 41, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stark-card:hover {
+            border-color: rgba(0, 240, 255, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.2);
+        }
+
+        /* Suit Theme Variables */
+        .theme-integrated {
+            --primary: #E62429;
+            --secondary: #F3D250;
+            --accent: #002B49;
+        }
+        .theme-blackgold {
+            --primary: #F3D250;
+            --secondary: #111111;
+            --accent: #FFD700;
+        }
+        .theme-stealth {
+            --primary: #00f0ff;
+            --secondary: #0a0a12;
+            --accent: #0055ff;
+        }
+        .theme-classic {
+            --primary: #ff003b;
+            --secondary: #0044ff;
+            --accent: #ffffff;
+        }
+
+        /* Web Line Divider */
+        .web-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary, #E62429), transparent);
+        }
+
+        /* Scanline effect */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="web-bg min-h-screen relative text-slate-100 theme-integrated select-none">
+
+    <canvas id="webCanvas"></canvas>
+
+    <!-- Sound Audio Toggle Indicator -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button id="soundToggle" class="bg-red-600/80 hover:bg-red-600 text-white p-4 rounded-full shadow-neon-red backdrop-blur transition-transform active:scale-95 flex items-center justify-center">
+            <i class="fa-solid fa-volume-high text-xl" id="soundIcon"></i>
+        </button>
+    </div>
+
+    <header class="fixed top-0 left-0 w-full z-40 bg-spideyDark/80 backdrop-blur-md border-b border-red-900/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-red-600 to-yellow-500 p-[2px] shadow-neon-red group-hover:scale-110 transition-transform">
+                    <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-spider text-red-500 text-xl group-hover:text-yellow-400 transition-colors"></i>
+                    </div>
+                </div>
+                <div class="font-orbitron">
+                    <span class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-red-600">RIZAL</span>
+                    <span class="text-xs block text-starkBlue tracking-widest font-bold">STARK TECH PORTAL</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center space-x-8 font-orbitron text-sm tracking-wide">
+                <a href="#hero" class="hover:text-red-500 transition-colors flex items-center gap-2"><i class="fa-solid fa-house text-xs text-red-500"></i> HOME</a>
+                <a href="#about" class="hover:text-yellow-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-user-ninja text-xs text-yellow-400"></i> PROFILE</a>
+                <a href="#stats" class="hover:text-cyan-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-bolt text-xs text-cyan-400"></i> POWERS</a>
+                <a href="#missions" class="hover:text-red-500 transition-colors flex items-center gap-2"><i class="fa-solid fa-rocket text-xs text-red-500"></i> MISSIONS</a>
+                <a href="#bugle" class="hover:text-yellow-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-newspaper text-xs text-yellow-400"></i> DAILY BUGLE</a>
+            </nav>
+
+            <!-- Multiverse Suit Switcher Button -->
+            <div class="hidden sm:flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-full border border-red-500/30">
+                <button onclick="setSuitTheme('integrated')" title="Integrated Suit" class="w-7 h-7 rounded-full bg-red-600 border-2 border-yellow-400 focus:scale-110 transition-transform"></button>
+                <button onclick="setSuitTheme('blackgold')" title="Black & Gold Suit" class="w-7 h-7 rounded-full bg-stone-900 border-2 border-yellow-500 focus:scale-110 transition-transform"></button>
+                <button onclick="setSuitTheme('stealth')" title="Stealth / Stark Tech" class="w-7 h-7 rounded-full bg-cyan-900 border-2 border-cyan-400 focus:scale-110 transition-transform"></button>
+                <button onclick="setSuitTheme('classic')" title="Classic Spidey" class="w-7 h-7 rounded-full bg-blue-600 border-2 border-red-500 focus:scale-110 transition-transform"></button>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobileMenuBtn" class="md:hidden text-2xl text-red-500 focus:outline-none">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden bg-spideyDark/95 border-b border-red-500/30 px-6 py-4 space-y-3 font-orbitron">
+            <a href="#hero" class="block hover:text-red-500">HOME</a>
+            <a href="#about" class="block hover:text-yellow-400">PROFILE</a>
+            <a href="#stats" class="block hover:text-cyan-400">POWERS</a>
+            <a href="#missions" class="block hover:text-red-500">MISSIONS</a>
+            <a href="#bugle" class="block hover:text-yellow-400">DAILY BUGLE</a>
+            <div class="pt-3 border-t border-slate-800 flex items-center gap-3">
+                <span class="text-xs text-slate-400">CHANGE SUIT:</span>
+                <button onclick="setSuitTheme('integrated')" class="w-6 h-6 rounded-full bg-red-600 border border-yellow-400"></button>
+                <button onclick="setSuitTheme('blackgold')" class="w-6 h-6 rounded-full bg-stone-900 border border-yellow-500"></button>
+                <button onclick="setSuitTheme('stealth')" class="w-6 h-6 rounded-full bg-cyan-900 border border-cyan-400"></button>
+                <button onclick="setSuitTheme('classic')" class="w-6 h-6 rounded-full bg-blue-600 border border-red-500"></button>
+            </div>
+        </div>
+    </header>
+
+    <section id="hero" class="relative min-h-screen pt-28 flex items-center justify-center overflow-hidden">
+        
+        <!-- Background Portal Visual Effect -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-40 pointer-events-none">
+            <div class="portal-ring w-[320px] h-[320px] sm:w-[500px] sm:h-[500px] md:w-[650px] md:h-[650px]"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12">
+            
+            <!-- Left Column: Intro Header -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-500/40 text-red-400 text-sm font-semibold tracking-wide animate-pulse">
+                    <i class="fa-solid fa-circle-exclamation text-yellow-400"></i> MULTIVERSE ANOMALY DETECTED
+                </div>
+
+                <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black font-orbitron tracking-tight leading-none">
+                    WEAVER OF <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-cyan-400 drop-shadow-lg" id="suitTitleName">
+                        RIZAL 'SPIDEY'
+                    </span>
+                </h1>
+
+                <p class="text-slate-300 text-lg sm:text-xl font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                    Full-Stack Web Developer & Creative Tech Engineer. Swinging through complex codebases, slinging elegant UI/UX solutions, and securing web ecosystems across all multiverses.
+                </p>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                    <button onclick="shootWebEffect(event)" class="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-yellow-500 text-white font-orbitron font-bold rounded-lg shadow-neon-red transform hover:-translate-y-1 transition-all flex items-center gap-3">
+                        <i class="fa-solid fa-hand-back-fist text-xl"></i> SHOOT WEB SWIPE
+                    </button>
+                    <a href="#missions" class="px-8 py-4 bg-slate-900/80 hover:bg-slate-800 text-cyan-400 font-orbitron font-bold rounded-lg border border-cyan-500/50 hover:border-cyan-400 shadow-neon-blue transition-all flex items-center gap-3">
+                        <i class="fa-solid fa-shield-halved"></i> EXPLORE MISSIONS
+                    </a>
+                </div>
+
+                <!-- Multiverse Coordinates Quick Stats -->
+                <div class="grid grid-cols-3 gap-4 pt-8 border-t border-slate-800 text-left">
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <div class="text-xs text-slate-400 font-orbitron">EARTH DESIGNATION</div>
+                        <div class="text-lg font-bold text-yellow-400 font-orbitron">EARTH-616 / ID</div>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <div class="text-xs text-slate-400 font-orbitron">WEB ACCURACY</div>
+                        <div class="text-lg font-bold text-red-500 font-orbitron">99.98% CLEAN</div>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <div class="text-xs text-slate-400 font-orbitron">STATUS</div>
+                        <div class="text-lg font-bold text-emerald-400 font-orbitron">READY TO SLING</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Avatar Graphic / Interactive Spider Badge -->
+            <div class="lg:col-span-5 flex justify-center relative">
+                <div class="relative w-72 h-72 sm:w-96 sm:h-96 rounded-full p-2 bg-gradient-to-b from-red-500 via-yellow-500 to-cyan-500 shadow-neon-red">
+                    <div class="w-full h-full bg-spideyDark rounded-full overflow-hidden relative flex items-center justify-center border-4 border-slate-900">
+                        
+                        <!-- Spider Eyes Avatar / Dynamic Graphic -->
+                        <div class="relative z-10 text-center flex flex-col items-center">
+                            <!-- Custom SVG Spidey Eyes -->
+                            <svg class="w-48 h-48 drop-shadow-2xl transition-all duration-500 transform hover:scale-105" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 70 C 50 20, 90 20, 95 80 C 70 85, 30 80, 20 70 Z" fill="#FFFFFF" stroke="#E62429" stroke-width="8" id="eyeLeft"/>
+                                <path d="M180 70 C 150 20, 110 20, 105 80 C 130 85, 170 80, 180 70 Z" fill="#FFFFFF" stroke="#E62429" stroke-width="8" id="eyeRight"/>
+                                <!-- Central Spider Emblem -->
+                                <path d="M100 95 L90 120 L100 135 L110 120 Z" fill="#F3D250"/>
+                                <path d="M100 100 L70 90 M100 105 L60 110 M100 120 L65 135 M100 125 L75 150" stroke="#F3D250" stroke-width="3"/>
+                                <path d="M100 100 L130 90 M100 105 L140 110 M100 120 L135 135 M100 125 L125 150" stroke="#F3D250" stroke-width="3"/>
+                            </svg>
+                            <span class="font-orbitron font-extrabold text-xl text-yellow-400 tracking-wider mt-2">RIZAL PARKER</span>
+                            <span class="text-xs text-slate-400">FRIENDLY NEIGHBORHOOD CODER</span>
+                        </div>
+
+                        <!-- Web Lines background on avatar -->
+                        <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="web-divider max-w-5xl mx-auto my-8"></div>
+
+    <section id="about" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-xs font-bold font-orbitron tracking-widest text-starkBlue uppercase">SECURE DOSSIER</h2>
+                <p class="text-3xl sm:text-5xl font-black font-orbitron text-white mt-1">WHO IS RIZAL?</p>
+                <div class="w-24 h-1 bg-red-600 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="stark-card p-8 relative group">
+                    <div class="w-14 h-14 rounded-lg bg-red-600/20 border border-red-500 flex items-center justify-center text-red-500 text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-code-merge"></i>
+                    </div>
+                    <h3 class="text-xl font-bold font-orbitron text-white mb-3">Frontend Precision</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Crafting pixel-perfect, highly responsive interfaces using React, Next.js, Tailwind CSS, and HTML5. Enhanced with Spider-Sense-level attention to detail and smooth micro-interactions.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="stark-card p-8 relative group">
+                    <div class="w-14 h-14 rounded-lg bg-yellow-500/20 border border-yellow-500 flex items-center justify-center text-yellow-400 text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-server"></i>
+                    </div>
+                    <h3 class="text-xl font-bold font-orbitron text-white mb-3">Backend Web-Slinging</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Architecting sturdy server backbones with Node.js, Express, Python, and RESTful APIs. Connecting disparate multiverse systems with high-speed data pipelines.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="stark-card p-8 relative group">
+                    <div class="w-14 h-14 rounded-lg bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-cyan-400 text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 class="text-xl font-bold font-orbitron text-white mb-3">Stark Security Guard</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Ensuring code hygiene, optimized performance, clean Git workflows, and bug-free web architectures that withstand high-traffic multiverse anomalies.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="py-20 bg-slate-950/60 relative border-y border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left: Stat Radar / Power Meters -->
+                <div class="lg:col-span-6 space-y-6">
+                    <div>
+                        <span class="text-xs font-bold font-orbitron text-red-500 tracking-widest">STARK HUD ANALYTICS</span>
+                        <h2 class="text-3xl sm:text-4xl font-black font-orbitron text-white mt-1">CHARACTER POWER METRICS</h2>
+                    </div>
+
+                    <!-- Stat Bars -->
+                    <div class="space-y-5">
+                        <!-- Stat 1 -->
+                        <div>
+                            <div class="flex justify-between font-orbitron text-sm mb-1">
+                                <span class="text-slate-300"><i class="fa-solid fa-laptop-code text-red-500 mr-2"></i> Web Development Speed</span>
+                                <span class="text-red-400 font-bold">98%</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                                <div class="h-full bg-gradient-to-r from-red-600 to-yellow-500 rounded-full" style="width: 98%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stat 2 -->
+                        <div>
+                            <div class="flex justify-between font-orbitron text-sm mb-1">
+                                <span class="text-slate-300"><i class="fa-solid fa-brain text-yellow-400 mr-2"></i> Problem Solving (Spider-Sense)</span>
+                                <span class="text-yellow-400 font-bold">95%</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                                <div class="h-full bg-gradient-to-r from-yellow-500 to-amber-300 rounded-full" style="width: 95%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stat 3 -->
+                        <div>
+                            <div class="flex justify-between font-orbitron text-sm mb-1">
+                                <span class="text-slate-300"><i class="fa-solid fa-wand-magic-sparkles text-cyan-400 mr-2"></i> UI/UX Visual Aesthetics</span>
+                                <span class="text-cyan-400 font-bold">92%</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                                <div class="h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full" style="width: 92%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stat 4 -->
+                        <div>
+                            <div class="flex justify-between font-orbitron text-sm mb-1">
+                                <span class="text-slate-300"><i class="fa-solid fa-database text-emerald-400 mr-2"></i> Database & Backend Logic</span>
+                                <span class="text-emerald-400 font-bold">90%</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                                <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Spider-Sense Interactive Panel -->
+                <div class="lg:col-span-6">
+                    <div class="stark-card p-8 border-2 border-yellow-500/40 relative">
+                        <div class="absolute -top-3 right-6 bg-yellow-500 text-black text-xs font-bold font-orbitron px-3 py-1 rounded">
+                            ACTIVE PROTOCOL
+                        </div>
+                        <h3 class="text-2xl font-black font-orbitron text-yellow-400 mb-4 flex items-center gap-3">
+                            <i class="fa-solid fa-triangle-exclamation text-red-500 animate-bounce"></i> SPIDER-SENSE AGILITY
+                        </h3>
+                        <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+                            "With great power comes great responsibility to write scalable code." Rizal adapts seamlessly to unexpected bugs, complex API refactoring, and tight project deadlines across diverse tech stacks.
+                        </p>
+
+                        <!-- Tech Badges Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div class="p-3 bg-slate-900 rounded border border-slate-800 flex items-center gap-2 text-xs font-orbitron">
+                                <i class="fa-brands fa-react text-cyan-400 text-lg"></i> React / Next.js
+                            </div>
+                            <div class="p-3 bg-slate-900 rounded border border-slate-800 flex items-center gap-2 text-xs font-orbitron">
+                                <i class="fa-brands fa-js text-yellow-400 text-lg"></i> JavaScript ES6+
+                            </div>
+                            <div class="p-3 bg-slate-900 rounded border border-slate-800 flex items-center gap-2 text-xs font-orbitron">
+                                <i class="fa-brands fa-css3-alt text-blue-400 text-lg"></i> Tailwind CSS
+                            </div>
+                            <div class="p-3 bg-slate-900 rounded border border-slate-800 flex items-center gap-2 text-xs font-orbitron">
+                                <i class="fa-brands fa-node-js text-green-500 text-lg"></i> Node.js API
+                            </div>
+                            <div class="p-3 bg-slate-900 rounded border border-slate-800 flex items-center gap-2 text-xs font-orbitron">
+                                <i class="fa-brands fa-python text-amber-400 text-lg"></i> Python Scripts
+                            </div>
+                            <div class="p-3 bg-slate-900 rounded border border-slate-800 flex items-center gap-2 text-xs font-orbitron">
+                                <i class="fa-brands fa-git-alt text-red-500 text-lg"></i> Git Multiverse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="missions" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-xs font-bold font-orbitron tracking-widest text-cyan-400 uppercase">CLASSIFIED ARCHIVES</h2>
+                <p class="text-3xl sm:text-5xl font-black font-orbitron text-white mt-1">MULTIVERSE MISSIONS</p>
+                <p class="text-slate-400 text-sm max-w-xl mx-auto mt-2">Selected web application projects crafted across parallel digital realms by Rizal.</p>
+                <div class="w-24 h-1 bg-yellow-500 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex justify-center gap-3 mb-10 flex-wrap">
+                <button onclick="filterMissions('all')" class="px-5 py-2 rounded-full text-xs font-orbitron font-bold bg-red-600 text-white border border-red-400">ALL MISSIONS</button>
+                <button onclick="filterMissions('frontend')" class="px-5 py-2 rounded-full text-xs font-orbitron font-bold bg-slate-900 text-slate-300 hover:border-cyan-400 border border-slate-800">FRONTEND</button>
+                <button onclick="filterMissions('fullstack')" class="px-5 py-2 rounded-full text-xs font-orbitron font-bold bg-slate-900 text-slate-300 hover:border-yellow-400 border border-slate-800">FULLSTACK</button>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projectsGrid">
+                
+                <!-- Project 1 -->
+                <div class="stark-card overflow-hidden group border border-slate-800 hover:border-red-500 transition-all" data-category="fullstack">
+                    <div class="h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                        <img src="https://placehold.co/600x400/0f121e/e62429?text=STARK+DASHBOARD" alt="Stark Tech Dashboard" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-spideyDark via-transparent to-transparent"></div>
+                        <span class="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-orbitron px-2 py-1 rounded">FULLSTACK</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-orbitron text-white mb-2 group-hover:text-yellow-400 transition-colors">STARK HUD Command System</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                            Real-time analytics dashboard with live websockets, interactive charts, and Stark Tech glowing dark UI components.
+                        </p>
+                        <div class="flex items-center justify-between text-xs font-orbitron pt-3 border-t border-slate-800">
+                            <span class="text-cyan-400">React • Tailwind • Node</span>
+                            <a href="#" onclick="event.preventDefault(); shootWebEffect(event);" class="text-red-500 hover:text-yellow-400 flex items-center gap-1">VIEW <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="stark-card overflow-hidden group border border-slate-800 hover:border-yellow-500 transition-all" data-category="frontend">
+                    <div class="h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                        <img src="https://placehold.co/600x400/0f121e/f3d250?text=DAILY+BUGLE+WEB" alt="Daily Bugle News" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-spideyDark via-transparent to-transparent"></div>
+                        <span class="absolute top-3 right-3 bg-yellow-500 text-black text-[10px] font-orbitron px-2 py-1 rounded font-bold">FRONTEND</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-orbitron text-white mb-2 group-hover:text-yellow-400 transition-colors">Daily Bugle News Portal</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                            High-speed dynamic news publication layout with fast page loads, responsive CSS Grid, and custom audio notifications.
+                        </p>
+                        <div class="flex items-center justify-between text-xs font-orbitron pt-3 border-t border-slate-800">
+                            <span class="text-yellow-400">Next.js • Tailwind CSS</span>
+                            <a href="#" onclick="event.preventDefault(); shootWebEffect(event);" class="text-red-500 hover:text-yellow-400 flex items-center gap-1">VIEW <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="stark-card overflow-hidden group border border-slate-800 hover:border-cyan-400 transition-all" data-category="fullstack">
+                    <div class="h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                        <img src="https://placehold.co/600x400/0f121e/00f0ff?text=MULTIVERSE+COMMERCE" alt="Multiverse Shop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-spideyDark via-transparent to-transparent"></div>
+                        <span class="absolute top-3 right-3 bg-cyan-500 text-black text-[10px] font-orbitron px-2 py-1 rounded font-bold">FULLSTACK</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold font-orbitron text-white mb-2 group-hover:text-cyan-400 transition-colors">Dimension E-Commerce Suite</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                            Scalable web store featuring cart sync, payment gateway integration, secure user sessions, and web GL product previews.
+                        </p>
+                        <div class="flex items-center justify-between text-xs font-orbitron pt-3 border-t border-slate-800">
+                            <span class="text-cyan-400">React • Express • MongoDB</span>
+                            <a href="#" onclick="event.preventDefault(); shootWebEffect(event);" class="text-red-500 hover:text-yellow-400 flex items-center gap-1">VIEW <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="bugle" class="py-20 bg-slate-950/80 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Daily Bugle Style Header Box -->
+            <div class="bg-stone-900 border-4 border-yellow-500 p-6 sm:p-10 shadow-neon-gold relative">
+                <div class="flex items-center justify-between border-b-2 border-yellow-500/50 pb-4 mb-6">
+                    <div>
+                        <span class="text-xs font-orbitron font-extrabold text-red-500 tracking-widest">THE DAILY BUGLE EXCLUSIVE</span>
+                        <h2 class="text-3xl sm:text-5xl font-black font-orbitron text-white">SEND SIGNAL TO RIZAL</h2>
+                    </div>
+                    <i class="fa-solid fa-spider text-4xl text-yellow-500 hidden sm:block"></i>
+                </div>
+
+                <p class="text-slate-300 text-sm mb-6">
+                    Got a project in mind or need a hero developer on your team? Transmit your signal directly to Rizal's comms link below.
+                </p>
+
+                <!-- Form -->
+                <form id="contactForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-orbitron text-yellow-400 mb-1">YOUR CODENAME / NAME</label>
+                            <input type="text" required placeholder="Peter Parker" class="w-full bg-slate-950 border border-slate-700 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-orbitron text-yellow-400 mb-1">COMMUNICATION EMAIL</label>
+                            <input type="email" required placeholder="peter@dailybugle.com" class="w-full bg-slate-950 border border-slate-700 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-orbitron text-yellow-400 mb-1">MISSION DETAILS / MESSAGE</label>
+                        <textarea rows="4" required placeholder="Describe your web development mission or inquiry..." class="w-full bg-slate-950 border border-slate-700 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 bg-gradient-to-r from-red-600 via-yellow-500 to-red-600 hover:from-red-500 hover:to-yellow-400 text-black font-orbitron font-black text-sm tracking-widest rounded shadow-neon-red uppercase transition-all transform active:scale-98">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> TRANSMIT MESSAGE TO RIZAL
+                    </button>
+                </form>
+
+                <!-- Success Message Container -->
+                <div id="formSuccess" class="hidden mt-4 p-4 bg-emerald-950 border border-emerald-500 rounded text-center text-emerald-400 font-orbitron text-sm">
+                    <i class="fa-solid fa-circle-check text-lg mr-2"></i> Signal transmitted successfully! Rizal will respond shortly.
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="bg-spideyDark border-t border-slate-800 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+            <div class="flex items-center justify-center gap-2 font-orbitron text-lg font-bold text-white">
+                <i class="fa-solid fa-spider text-red-500"></i> RIZAL • NO WAY HOME EDITION
+            </div>
+            <p class="text-slate-500 text-xs">
+                Inspired by Marvel Studios Spider-Man: No Way Home. Designed & Developed by Rizal. All Rights Reserved.
+            </p>
+            <div class="flex justify-center gap-6 text-slate-400 text-lg pt-2">
+                <a href="#" class="hover:text-red-500 transition-colors"><i class="fa-brands fa-github"></i></a>
+                <a href="#" class="hover:text-cyan-400 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="#" class="hover:text-yellow-400 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="hover:text-red-500 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Web Shooter Interactive Canvas Effect
+        const canvas = document.getElementById('webCanvas');
+        const ctx = canvas.getContext('2d');
+        let webs = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class WebLine {
+            constructor(startX, startY, targetX, targetY) {
+                this.startX = startX;
+                this.startY = startY;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.progress = 0;
+                this.life = 1;
+            }
+
+            update() {
+                if (this.progress < 1) {
+                    this.progress += 0.15;
+                } else {
+                    this.life -= 0.03;
+                }
+            }
+
+            draw() {
+                const currentX = this.startX + (this.targetX - this.startX) * Math.min(this.progress, 1);
+                const currentY = this.startY + (this.targetY - this.startY) * Math.min(this.progress, 1);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(this.startX, this.startY);
+                ctx.lineTo(currentX, currentY);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.life})`;
+                ctx.lineWidth = 3;
+                ctx.shadowColor = '#00f0ff';
+                ctx.shadowBlur = 10;
+                ctx.stroke();
+
+                // Draw web branches
+                if (this.progress >= 0.5) {
+                    ctx.beginPath();
+                    ctx.moveTo(currentX, currentY);
+                    ctx.lineTo(currentX + 15, currentY - 15);
+                    ctx.moveTo(currentX, currentY);
+                    ctx.lineTo(currentX - 15, currentY + 15);
+                    ctx.strokeStyle = `rgba(243, 210, 80, ${this.life * 0.7})`;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+        }
+
+        function animateWebs() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            webs.forEach((web, index) => {
+                web.update();
+                web.draw();
+                if (web.life <= 0) {
+                    webs.splice(index, 1);
+                }
+            });
+            requestAnimationFrame(animateWebs);
+        }
+        animateWebs();
+
+        // Trigger web shoot effect from click or button
+        function shootWebEffect(e) {
+            playWebSound();
+            const startX = e ? e.clientX : window.innerWidth / 2;
+            const startY = e ? e.clientY : window.innerHeight;
+
+            for (let i = 0; i < 5; i++) {
+                const targetX = startX + (Math.random() - 0.5) * 400;
+                const targetY = startY - Math.random() * 300 - 100;
+                webs.push(new WebLine(startX, startY, targetX, targetY));
+            }
+        }
+
+        // Web sound generator using Web Audio API (No external assets required)
+        let soundEnabled = true;
+        const soundToggle = document.getElementById('soundToggle');
+        const soundIcon = document.getElementById('soundIcon');
+
+        soundToggle.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            if (soundEnabled) {
+                soundIcon.className = "fa-solid fa-volume-high text-xl";
+                soundToggle.classList.replace('bg-slate-700', 'bg-red-600');
+            } else {
+                soundIcon.className = "fa-solid fa-volume-xmark text-xl";
+                soundToggle.classList.replace('bg-red-600', 'bg-slate-700');
+            }
+        });
+
+        function playWebSound() {
+            if (!soundEnabled) return;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const ctxAudio = new AudioCtx();
+                
+                const osc = ctxAudio.createOscillator();
+                const gain = ctxAudio.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctxAudio.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(120, ctxAudio.currentTime + 0.15);
+
+                gain.gain.setValueAtTime(0.3, ctxAudio.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctxAudio.currentTime + 0.15);
+
+                osc.connect(gain);
+                gain.connect(ctxAudio.destination);
+
+                osc.start();
+                osc.stop(ctxAudio.currentTime + 0.15);
+            } catch(err) {
+                console.log('Audio Context Error:', err);
+            }
+        }
+
+        // Multiverse Theme Suit Switcher Logic
+        function setSuitTheme(theme) {
+            playWebSound();
+            const body = document.body;
+            const titleName = document.getElementById('suitTitleName');
+            const eyeLeft = document.getElementById('eyeLeft');
+            const eyeRight = document.getElementById('eyeRight');
+
+            body.classList.remove('theme-integrated', 'theme-blackgold', 'theme-stealth', 'theme-classic');
+            body.classList.add(`theme-${theme}`);
+
+            if (theme === 'integrated') {
+                titleName.innerText = "RIZAL 'INTEGRATED'";
+                eyeLeft.setAttribute('stroke', '#E62429');
+                eyeRight.setAttribute('stroke', '#E62429');
+            } else if (theme === 'blackgold') {
+                titleName.innerText = "RIZAL 'BLACK & GOLD'";
+                eyeLeft.setAttribute('stroke', '#F3D250');
+                eyeRight.setAttribute('stroke', '#F3D250');
+            } else if (theme === 'stealth') {
+                titleName.innerText = "RIZAL 'STARK TECH'";
+                eyeLeft.setAttribute('stroke', '#00f0ff');
+                eyeRight.setAttribute('stroke', '#00f0ff');
+            } else if (theme === 'classic') {
+                titleName.innerText = "RIZAL 'CLASSIC'";
+                eyeLeft.setAttribute('stroke', '#ff003b');
+                eyeRight.setAttribute('stroke', '#ff003b');
+            }
+        }
+
+        // Filter Portfolio Projects
+        function filterMissions(category) {
+            const projects = document.querySelectorAll('#projectsGrid > div');
+            projects.forEach(p => {
+                if (category === 'all' || p.getAttribute('data-category') === category) {
+                    p.style.display = 'block';
+                } else {
+                    p.style.display = 'none';
+                }
+            });
+        }
+
+        // Handle Contact Form Submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            playWebSound();
+            document.getElementById('formSuccess').classList.remove('hidden');
+            e.target.reset();
+            setTimeout(() => {
+                document.getElementById('formSuccess').classList.add('hidden');
+            }, 5000);
+        }
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
